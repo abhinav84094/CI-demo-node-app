@@ -18,12 +18,17 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18'
+        cache: 'npm'
     
     - name: Install dependencies
-      run: npm install
+      run: npm ci
       
     - name: Run tests
       run: npm test
       
-    - name: Build
-      run: node index.js &
+    - name: Verify build
+      run: |
+        node index.js &
+        sleep 5  # Give server time to start
+        curl -s http://localhost:3000 | grep "Hello CI/CD World!"
+        kill $!  # Kill the background process
